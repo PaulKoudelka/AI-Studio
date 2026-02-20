@@ -88,9 +88,9 @@ public sealed class ProviderDeepSeek() : BaseProvider(LLMProviders.DEEP_SEEK, "h
     }
     
     /// <inhertidoc />
-    public override Task<IReadOnlyList<IReadOnlyList<float>>> EmbedTextAsync(Provider.Model embeddingModel, SettingsManager settingsManager, CancellationToken token = default, params List<string> texts)
+    public override Task<IReadOnlyList<IReadOnlyList<float>>> EmbedTextAsync(Model embeddingModel, SettingsManager settingsManager, CancellationToken token = default, params List<string> texts)
     {
-        return Task.FromResult<IReadOnlyList<IReadOnlyList<float>>>(Array.Empty<IReadOnlyList<float>>());
+        return Task.FromResult<IReadOnlyList<IReadOnlyList<float>>>([]);
     }
 
     /// <inheritdoc />

@@ -98,7 +98,7 @@ public class ProviderGoogle() : BaseProvider(LLMProviders.GOOGLE, "https://gener
             if (string.IsNullOrWhiteSpace(modelName))
             {
                 LOGGER.LogError("No model name provided for embedding request.");
-                return Array.Empty<IReadOnlyList<float>>();
+                return [];
             }
 
             if (modelName.StartsWith("models/", StringComparison.OrdinalIgnoreCase))
@@ -107,7 +107,7 @@ public class ProviderGoogle() : BaseProvider(LLMProviders.GOOGLE, "https://gener
             if (!requestedSecret.Success)
             {
                 LOGGER.LogError("No valid API key available for embedding request.");
-                return Array.Empty<IReadOnlyList<float>>();
+                return [];
             }
             
             // Prepare the Google Gemini embedding request:
@@ -117,10 +117,11 @@ public class ProviderGoogle() : BaseProvider(LLMProviders.GOOGLE, "https://gener
                 {
                     parts = texts.Select(text => new { text }).ToArray()
                 },
+                
                 taskType = "SEMANTIC_SIMILARITY"
             };
+            
             var embeddingRequest = JsonSerializer.Serialize(payload, JSON_SERIALIZER_OPTIONS);
-
             var embedUrl = $"https://generativelanguage.googleapis.com/v1beta/models/{modelName}:embedContent";
             using var request = new HttpRequestMessage(HttpMethod.Post, embedUrl);
             request.Headers.Add("x-goog-api-key", await requestedSecret.Secret.Decrypt(ENCRYPTION));
@@ -134,29 +135,28 @@ public class ProviderGoogle() : BaseProvider(LLMProviders.GOOGLE, "https://gener
             if (!response.IsSuccessStatusCode)
             {
                 LOGGER.LogError("Embedding request failed with status code {ResponseStatusCode} and body: '{ResponseBody}'.", response.StatusCode, responseBody);
-                return Array.Empty<IReadOnlyList<float>>();
+                return [];
             }
 
             var embeddingResponse = JsonSerializer.Deserialize<GoogleEmbeddingResponse>(responseBody, JSON_SERIALIZER_OPTIONS);
-            
             if (embeddingResponse is { Embedding: not null })
             {
                 return embeddingResponse.Embedding
-                    .Select(d => d.Values?.ToArray() ?? Array.Empty<float>())
+                    .Select(d => d.Values?.ToArray() ?? [])
                     .Cast<IReadOnlyList<float>>()
                     .ToArray();
             }
             else
             {
                 LOGGER.LogError("Was not able to deserialize the embedding response.");
-                return Array.Empty<IReadOnlyList<float>>();
+                return [];
             }
             
         }
         catch (Exception e)
         {
             LOGGER.LogError("Failed to perform embedding request: '{Message}'.", e.Message);
-            return Array.Empty<IReadOnlyList<float>>();
+            return [];
         }
     }
 
