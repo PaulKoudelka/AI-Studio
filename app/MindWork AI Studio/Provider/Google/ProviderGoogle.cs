@@ -260,45 +260,6 @@ public class ProviderGoogle() : BaseProvider(LLMProviders.GOOGLE, "https://gener
     private sealed record GoogleEmbeddingResponse
     {
         public List<GoogleEmbedding>? Embedding { get; set; }
-        try
-        {
-            var modelResponse = await response.Content.ReadFromJsonAsync<ModelsResponse>(token);
-            if (modelResponse == default || modelResponse.Data.Count is 0)
-            {
-                LOGGER.LogError("Google model list response did not contain a valid data array.");
-                return [];
-            }
-
-            return modelResponse.Data
-                .Where(model => !string.IsNullOrWhiteSpace(model.Id))
-                .Select(model => new Model(this.NormalizeModelId(model.Id), model.DisplayName))
-                .ToArray();
-        }
-        catch (Exception e)
-        {
-            LOGGER.LogError("Failed to parse Google model list response: '{Message}'.", e.Message);
-            return [];
-        }
-    }
-
-    private bool IsEmbeddingModel(string modelId)
-    {
-        return modelId.Contains("embedding", StringComparison.OrdinalIgnoreCase) ||
-               modelId.Contains("embed", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private Model WithDisplayNameFallback(Model model)
-    {
-        return string.IsNullOrWhiteSpace(model.DisplayName)
-            ? new Model(model.Id, model.Id)
-            : model;
-    }
-
-    private string NormalizeModelId(string modelId)
-    {
-        return modelId.StartsWith("models/", StringComparison.OrdinalIgnoreCase)
-            ? modelId["models/".Length..]
-            : modelId;
     }
 
     private sealed record GoogleEmbedding
