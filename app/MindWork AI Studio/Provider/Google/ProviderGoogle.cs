@@ -256,14 +256,4 @@ public class ProviderGoogle() : BaseProvider(LLMProviders.GOOGLE, "https://gener
             ? modelId["models/".Length..]
             : modelId;
     }
-
-    private sealed record GoogleEmbeddingResponse
-    {
-        public List<GoogleEmbedding>? Embedding { get; set; }
-    }
-
-    private sealed record GoogleEmbedding
-    {
-        public List<float>? Values { get; set; }
-    }
 }
