@@ -141,9 +141,9 @@ public partial class SettingsPanelEmbeddings : SettingsPanelProviderBase
     {
         var dialogParameters = new DialogParameters<SingleInputDialog>
         {
-            { x => x.ConfirmText, "Embed text" },
-            { x => x.InputHeaderText, "Add text that should be embedded:" },
-            { x => x.UserInput, "Add text here"}
+            { x => x.ConfirmText, T("Embed text") },
+            { x => x.InputHeaderText, T("Add text that should be embedded:") },
+            { x => x.UserInput, T("Example text to embed") },
         };
         
         var dialogReference = await this.DialogService.ShowAsync<SingleInputDialog>(T("Test Embedding Provider"), dialogParameters, DialogOptions.FULLSCREEN);
