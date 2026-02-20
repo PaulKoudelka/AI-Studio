@@ -19,9 +19,7 @@ public sealed record GoogleEmbeddingResponse
             }
 
             if (reader.TokenType == JsonTokenType.StartArray)
-            {
                 return JsonSerializer.Deserialize<List<GoogleEmbedding>>(ref reader, options) ?? new();
-            }
 
             throw new JsonException("Expected object or array for embedding.");
         }
