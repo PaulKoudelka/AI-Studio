@@ -121,8 +121,8 @@ public sealed class PluginConfiguration(bool isInternal, LuaState state, PluginT
         // Config: preview features visibility
         ManagedConfiguration.TryProcessConfiguration(x => x.App, x => x.PreviewVisibility, this.Id, settingsTable, dryRun);
         
-        // Config: enabled preview features
-        ManagedConfiguration.TryProcessConfiguration(x => x.App, x => x.EnabledPreviewFeatures, this.Id, settingsTable, dryRun);
+        // Config: enabled preview features (plugin contribution; users can enable additional features)
+        ManagedConfiguration.TryProcessConfigurationWithPluginContribution(x => x.App, x => x.EnabledPreviewFeatures, this.Id, settingsTable, dryRun);
         
         // Config: hide some assistants?
         ManagedConfiguration.TryProcessConfiguration(x => x.App, x => x.HiddenAssistants, this.Id, settingsTable, dryRun);
@@ -148,6 +148,9 @@ public sealed class PluginConfiguration(bool isInternal, LuaState state, PluginT
         // Handle configured document analysis policies:
         PluginConfigurationObject.TryParse(PluginConfigurationObjectType.DOCUMENT_ANALYSIS_POLICY, x => x.DocumentAnalysis.Policies, x => x.NextDocumentAnalysisPolicyNum, mainTable, this.Id, ref this.configObjects, dryRun);
         
+        // Config: preselected provider?
+        ManagedConfiguration.TryProcessConfiguration(x => x.App, x => x.PreselectedProvider, Guid.Empty, this.Id, settingsTable, dryRun);
+
         // Config: preselected profile?
         ManagedConfiguration.TryProcessConfiguration(x => x.App, x => x.PreselectedProfile, Guid.Empty, this.Id, settingsTable, dryRun);
 
