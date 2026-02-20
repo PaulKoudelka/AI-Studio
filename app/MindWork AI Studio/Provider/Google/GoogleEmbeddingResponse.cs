@@ -28,8 +28,3 @@ public sealed record GoogleEmbeddingResponse
             JsonSerializer.Serialize(writer, value, options);
     }
 }
-
-public sealed record GoogleEmbedding
-{
-    public List<float>? Values { get; init; }
-}
