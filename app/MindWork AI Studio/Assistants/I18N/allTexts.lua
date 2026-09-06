@@ -3703,6 +3703,144 @@ UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCECLOUDEMBEDDINGWARNING::T6617545
 -- All files in this folder and its subfolders
 UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCECLOUDEMBEDDINGWARNING::T916879200"] = "All files in this folder and its subfolders"
 
+-- You might configure different data sources. A data source can include one file, all files in a directory, or data from your company. Later, you can incorporate these data sources as needed when the AI requires this data to complete a certain task.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1084943026"] = "You might configure different data sources. A data source can include one file, all files in a directory, or data from your company. Later, you can incorporate these data sources as needed when the AI requires this data to complete a certain task."
+
+-- Automatic local data source refresh
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1208397349"] = "Automatic local data source refresh"
+
+-- Edit Local Directory Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1215599168"] = "Edit Local Directory Data Source"
+
+-- Refresh
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T135637716"] = "Refresh"
+
+-- Add Local Directory as Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1454193397"] = "Add Local Directory as Data Source"
+
+-- Delete
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1469573738"] = "Delete"
+
+-- Refresh all
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1503082343"] = "Refresh all"
+
+-- Kerberos/SSO ERI data sources cannot be exported yet. Please configure them manually in the configuration plugin.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1577531115"] = "Kerberos/SSO ERI data sources cannot be exported yet. Please configure them manually in the configuration plugin."
+
+-- Cannot export this ERI data source because the authentication secret could not be encrypted.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1592527757"] = "Cannot export this ERI data source because the authentication secret could not be encrypted."
+
+-- External (ERI)
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1652430727"] = "External (ERI)"
+
+-- Local File
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1687345358"] = "Local File"
+
+-- Delete Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T1849107431"] = "Delete Data Source"
+
+-- Local Directory Data Source Information
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T2146756020"] = "Local Directory Data Source Information"
+
+-- Edit ERI v1 Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T221059217"] = "Edit ERI v1 Data Source"
+
+-- Indexed files
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T2235289713"] = "Indexed files"
+
+-- Edit Local File Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T2453292893"] = "Edit Local File Data Source"
+
+-- ERI v1 Data Source Information
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T26243729"] = "ERI v1 Data Source Information"
+
+-- Name
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T266367750"] = "Name"
+
+-- Not applicable
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T2675917723"] = "Not applicable"
+
+-- No valid embedding
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T2698203405"] = "No valid embedding"
+
+-- Embedding
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T2838542994"] = "Embedding"
+
+-- This data source is managed by your organization.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3031462878"] = "This data source is managed by your organization."
+
+-- Edit
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3267849393"] = "Edit"
+
+-- Are you sure you want to delete the data source '{0}' of type '{1}'?
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3337072977"] = "Are you sure you want to delete the data source '{0}' of type '{1}'?"
+
+-- Add Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3387511033"] = "Add Data Source"
+
+-- Unknown
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3424652889"] = "Unknown"
+
+-- Close
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3448155331"] = "Close"
+
+-- Add Local File as Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3500365052"] = "Add Local File as Data Source"
+
+-- Type
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3512062061"] = "Type"
+
+-- Local File Data Source Information
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3525663993"] = "Local File Data Source Information"
+
+-- No data sources configured yet.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3549650120"] = "No data sources configured yet."
+
+-- Export Access Token?
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3595669127"] = "Export Access Token?"
+
+-- Local data sources refresh when files change.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3687976654"] = "Local data sources refresh when files change."
+
+-- Not available
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3706935413"] = "Not available"
+
+-- Export ERI Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3831281036"] = "Export ERI Data Source"
+
+-- Actions
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T3865031940"] = "Actions"
+
+-- This ERI data source has an access token configured. Do you want to include the encrypted access token in the export? Note: The recipient will need the same encryption secret to use the access token.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T4027572258"] = "This ERI data source has an access token configured. Do you want to include the encrypted access token in the export? Note: The recipient will need the same encryption secret to use the access token."
+
+-- Waiting for indexing status
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T4108252513"] = "Waiting for indexing status"
+
+-- Information
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T4256323669"] = "Information"
+
+-- Add ERI v1 Data Source
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T590005498"] = "Add ERI v1 Data Source"
+
+-- Cannot export this ERI data source because no enterprise encryption secret is configured.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T750361472"] = "Cannot export this ERI data source because no enterprise encryption secret is configured."
+
+-- External Data (ERI-Server v1)
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T774473996"] = "External Data (ERI-Server v1)"
+
+-- Cannot export this ERI data source because no authentication secret is configured. The issue was: {0}
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T782820095"] = "Cannot export this ERI data source because no authentication secret is configured. The issue was: {0}"
+
+-- {0} of {1}
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T825342513"] = "{0} of {1}"
+
+-- Local data sources refresh only when triggered manually.
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T854231603"] = "Local data sources refresh only when triggered manually."
+
+-- Local Directory
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCEMANAGEMENT::T926703547"] = "Local Directory"
+
 -- Yes, let the AI decide which data sources are needed.
 UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::DATASOURCESELECTION::T1031370894"] = "Yes, let the AI decide which data sources are needed."
 
@@ -4551,6 +4689,9 @@ UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::SETTINGS::SETTINGSPANELCONFIDENCE::T85322
 
 -- Provider
 UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::SETTINGS::SETTINGSPANELCONFIDENCE::T900237532"] = "Provider"
+
+-- Configure Data Sources
+UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::SETTINGS::SETTINGSPANELDATASOURCES::T476193103"] = "Configure Data Sources"
 
 -- Embedding Result
 UI_TEXT_CONTENT["AISTUDIO::COMPONENTS::SETTINGS::SETTINGSPANELEMBEDDINGS::T1387042335"] = "Embedding Result"
@@ -7510,146 +7651,11 @@ UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGCODING::T516498299"]
 -- Assistant: Coding Options
 UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGCODING::T585868261"] = "Assistant: Coding Options"
 
--- You might configure different data sources. A data source can include one file, all files in a directory, or data from your company. Later, you can incorporate these data sources as needed when the AI requires this data to complete a certain task.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1084943026"] = "You might configure different data sources. A data source can include one file, all files in a directory, or data from your company. Later, you can incorporate these data sources as needed when the AI requires this data to complete a certain task."
-
--- Automatic local data source refresh
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1208397349"] = "Automatic local data source refresh"
-
--- Edit Local Directory Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1215599168"] = "Edit Local Directory Data Source"
-
--- Refresh
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T135637716"] = "Refresh"
-
--- Add Local Directory as Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1454193397"] = "Add Local Directory as Data Source"
-
--- Delete
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1469573738"] = "Delete"
-
--- Refresh all
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1503082343"] = "Refresh all"
-
--- Kerberos/SSO ERI data sources cannot be exported yet. Please configure them manually in the configuration plugin.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1577531115"] = "Kerberos/SSO ERI data sources cannot be exported yet. Please configure them manually in the configuration plugin."
-
--- Cannot export this ERI data source because the authentication secret could not be encrypted.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1592527757"] = "Cannot export this ERI data source because the authentication secret could not be encrypted."
-
--- External (ERI)
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1652430727"] = "External (ERI)"
-
--- Local File
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1687345358"] = "Local File"
-
--- Delete Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T1849107431"] = "Delete Data Source"
-
--- Local Directory Data Source Information
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T2146756020"] = "Local Directory Data Source Information"
-
--- Edit ERI v1 Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T221059217"] = "Edit ERI v1 Data Source"
-
--- Indexed files
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T2235289713"] = "Indexed files"
-
--- Edit Local File Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T2453292893"] = "Edit Local File Data Source"
-
--- ERI v1 Data Source Information
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T26243729"] = "ERI v1 Data Source Information"
-
--- Name
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T266367750"] = "Name"
-
--- Not applicable
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T2675917723"] = "Not applicable"
-
--- No valid embedding
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T2698203405"] = "No valid embedding"
-
--- Embedding
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T2838542994"] = "Embedding"
-
--- This data source is managed by your organization.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3031462878"] = "This data source is managed by your organization."
-
--- Edit
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3267849393"] = "Edit"
-
--- Are you sure you want to delete the data source '{0}' of type '{1}'?
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3337072977"] = "Are you sure you want to delete the data source '{0}' of type '{1}'?"
-
--- Add Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3387511033"] = "Add Data Source"
-
--- Unknown
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3424652889"] = "Unknown"
-
 -- Close
 UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3448155331"] = "Close"
 
--- Add Local File as Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3500365052"] = "Add Local File as Data Source"
-
--- Type
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3512062061"] = "Type"
-
--- Local File Data Source Information
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3525663993"] = "Local File Data Source Information"
-
--- No data sources configured yet.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3549650120"] = "No data sources configured yet."
-
--- Export Access Token?
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3595669127"] = "Export Access Token?"
-
--- Local data sources refresh when files change.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3687976654"] = "Local data sources refresh when files change."
-
--- Not available
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3706935413"] = "Not available"
-
--- Export ERI Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3831281036"] = "Export ERI Data Source"
-
--- Actions
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T3865031940"] = "Actions"
-
--- This ERI data source has an access token configured. Do you want to include the encrypted access token in the export? Note: The recipient will need the same encryption secret to use the access token.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T4027572258"] = "This ERI data source has an access token configured. Do you want to include the encrypted access token in the export? Note: The recipient will need the same encryption secret to use the access token."
-
--- Waiting for indexing status
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T4108252513"] = "Waiting for indexing status"
-
--- Information
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T4256323669"] = "Information"
-
 -- Configured Data Sources
 UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T543942217"] = "Configured Data Sources"
-
--- Add ERI v1 Data Source
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T590005498"] = "Add ERI v1 Data Source"
-
--- Cannot export this ERI data source because no enterprise encryption secret is configured.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T750361472"] = "Cannot export this ERI data source because no enterprise encryption secret is configured."
-
--- External Data (ERI-Server v1)
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T774473996"] = "External Data (ERI-Server v1)"
-
--- Cannot export this ERI data source because no authentication secret is configured. The issue was: {0}
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T782820095"] = "Cannot export this ERI data source because no authentication secret is configured. The issue was: {0}"
-
--- {0} of {1}
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T825342513"] = "{0} of {1}"
-
--- Local data sources refresh only when triggered manually.
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T854231603"] = "Local data sources refresh only when triggered manually."
-
--- Local Directory
-UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGDATASOURCES::T926703547"] = "Local Directory"
 
 -- When enabled, you can preselect some ERI server options.
 UI_TEXT_CONTENT["AISTUDIO::DIALOGS::SETTINGS::SETTINGSDIALOGERISERVER::T1280666275"] = "When enabled, you can preselect some ERI server options."
