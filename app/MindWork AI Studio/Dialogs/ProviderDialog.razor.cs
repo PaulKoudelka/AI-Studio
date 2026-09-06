@@ -327,10 +327,22 @@ public partial class ProviderDialog : MSGComponentBase, ISecretId
         var tokenizerResponse = await this.StoreOrDeleteTokenizerAsync();
         if (!tokenizerResponse.Success)
         {
-            this.dataCustomTokenizerValidationIssue = tokenizerResponse.Message;
-            await this.form.Validate();
-            return;
+            //
+            // Storing a tokenizer the user has chosen must succeed: otherwise the provider would
+            // silently work without the tokenizer the user asked for. Removing a tokenizer the
+            // user has cleared is best effort, though. A failed cleanup leaves an unused file
+            // behind, which is no reason to refuse saving the provider itself.
+            //
+            if (!string.IsNullOrWhiteSpace(this.dataFilePath))
+            {
+                this.dataCustomTokenizerValidationIssue = tokenizerResponse.Message;
+                await this.form.Validate();
+                return;
+            }
+
+            this.Logger.LogWarning($"Failed to remove the tokenizer of provider '{this.DataInstanceName}'. The provider is stored anyway. The message was: {tokenizerResponse.Message}");
         }
+
         this.dataFilePath = tokenizerResponse.StoredPath;
         
         // Use the data model to store the provider.
@@ -465,10 +477,18 @@ public partial class ProviderDialog : MSGComponentBase, ISecretId
     private Task<TokenizerResponse> StoreOrDeleteTokenizerAsync()
     {
         var tokenizerId = TokenizerModelId.ForProviderId(this.DataId);
-        if (string.IsNullOrWhiteSpace(this.dataFilePath))
-            return this.RustService.DeleteTokenizer(tokenizerId);
+        if (!string.IsNullOrWhiteSpace(this.dataFilePath))
+            return this.RustService.StoreTokenizer(tokenizerId, this.dataFilePath);
 
-        return this.RustService.StoreTokenizer(tokenizerId, this.dataFilePath);
+        //
+        // A provider which never had a tokenizer has nothing to clean up. Calling the runtime
+        // anyway could only fail here, and that failure would block saving a provider which has
+        // nothing to do with tokenizers at all.
+        //
+        if (string.IsNullOrWhiteSpace(this.DataTokenizerPath))
+            return Task.FromResult(new TokenizerResponse(true, 0, string.Empty));
+
+        return this.RustService.DeleteTokenizer(tokenizerId);
     }
 
     private void OnProviderChanged(LLMProviders selectedProvider)

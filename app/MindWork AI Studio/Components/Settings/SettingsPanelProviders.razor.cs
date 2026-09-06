@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using AIStudio.Dialogs;
 using AIStudio.Settings;
-using AIStudio.Tools.Rust;
 using AIStudio.Tools.Services;
 
 using Microsoft.AspNetCore.Components;
@@ -134,8 +133,14 @@ public partial class SettingsPanelProviders : SettingsPanelProviderBase
             return;
         
         var deleteSecretResponse = await this.RustService.DeleteAPIKey(provider, SecretStoreType.LLM_PROVIDER);
-        var deleteTokenizerResponse = await this.RustService.DeleteTokenizer(TokenizerModelId.ForProvider(provider));
-        if(deleteSecretResponse.Success && deleteTokenizerResponse.Success)
+
+        //
+        // Removing the tokenizer is best effort: it leaves an unused file behind when it fails,
+        // which is not worth bothering the user about while they are deleting the provider. The
+        // API key is different, though, because a leftover secret is a secret we promised to remove.
+        //
+        _ = await this.RustService.DeleteTokenizer(TokenizerModelId.ForProvider(provider));
+        if(deleteSecretResponse.Success)
         {
             this.SettingsManager.ConfigurationData.Providers.Remove(provider);
             await this.SettingsManager.StoreSettings();
@@ -144,7 +149,7 @@ public partial class SettingsPanelProviders : SettingsPanelProviderBase
         {
             var issueDialogParameters = new DialogParameters<ConfirmDialog>
             {
-                { x => x.Message, string.Format(T("Couldn't delete the provider '{0}'. The issue: {1}. We can ignore this issue and delete the provider anyway. Do you want to ignore it and delete this provider?"), provider.InstanceName, BuildDeleteIssue(deleteSecretResponse, deleteTokenizerResponse)) },
+                { x => x.Message, string.Format(T("Couldn't delete the provider '{0}'. The issue: {1}. We can ignore this issue and delete the provider anyway. Do you want to ignore it and delete this provider?"), provider.InstanceName, deleteSecretResponse.Issue) },
             };
         
             var issueDialogReference = await this.DialogService.ShowAsync<ConfirmDialog>(T("Delete LLM Provider"), issueDialogParameters, DialogOptions.FULLSCREEN);
@@ -159,18 +164,6 @@ public partial class SettingsPanelProviders : SettingsPanelProviderBase
 
         await this.UpdateProviders();
         await this.MessageBus.SendMessage<bool>(this, Event.CONFIGURATION_CHANGED);
-    }
-
-    private static string BuildDeleteIssue(DeleteSecretResponse deleteSecretResponse, TokenizerResponse deleteTokenizerResponse)
-    {
-        var issues = new List<string>();
-        if (!deleteSecretResponse.Success)
-            issues.Add(deleteSecretResponse.Issue);
-
-        if (!deleteTokenizerResponse.Success)
-            issues.Add(deleteTokenizerResponse.Message);
-
-        return string.Join(" | ", issues);
     }
 
     private async Task ExportLLMProvider(AIStudio.Settings.Provider provider)

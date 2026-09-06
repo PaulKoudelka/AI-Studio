@@ -3,7 +3,6 @@ using AIStudio.Dialogs;
 using AIStudio.Provider;
 using AIStudio.Settings;
 using AIStudio.Tools.Services;
-using AIStudio.Tools.Rust;
 
 using Microsoft.AspNetCore.Components;
 
@@ -144,8 +143,14 @@ public partial class SettingsPanelEmbeddings : SettingsPanelProviderBase
             return;
         
         var deleteSecretResponse = await this.RustService.DeleteAPIKey(provider, SecretStoreType.EMBEDDING_PROVIDER);
-        var deleteTokenizerResponse = await this.RustService.DeleteTokenizer(TokenizerModelId.ForEmbeddingProvider(provider));
-        if(deleteSecretResponse.Success && deleteTokenizerResponse.Success)
+
+        //
+        // Removing the tokenizer is best effort: it leaves an unused file behind when it fails,
+        // which is not worth bothering the user about while they are deleting the provider. The
+        // API key is different, though, because a leftover secret is a secret we promised to remove.
+        //
+        _ = await this.RustService.DeleteTokenizer(TokenizerModelId.ForEmbeddingProvider(provider));
+        if(deleteSecretResponse.Success)
         {
             this.SettingsManager.ConfigurationData.EmbeddingProviders.Remove(provider);
             await this.SettingsManager.StoreSettings();
@@ -154,7 +159,7 @@ public partial class SettingsPanelEmbeddings : SettingsPanelProviderBase
         {
             var issueDialogParameters = new DialogParameters<ConfirmDialog>
             {
-                { x => x.Message, string.Format(T("Couldn't delete the embedding provider '{0}'. The issue: {1}. We can ignore this issue and delete the embedding provider anyway. Do you want to ignore it and delete this embedding provider?"), provider.Name, BuildDeleteIssue(deleteSecretResponse, deleteTokenizerResponse)) },
+                { x => x.Message, string.Format(T("Couldn't delete the embedding provider '{0}'. The issue: {1}. We can ignore this issue and delete the embedding provider anyway. Do you want to ignore it and delete this embedding provider?"), provider.Name, deleteSecretResponse.Issue) },
             };
 
             var issueDialogReference = await this.DialogService.ShowAsync<ConfirmDialog>(T("Delete Embedding Provider"), issueDialogParameters, DialogOptions.FULLSCREEN);
@@ -169,18 +174,6 @@ public partial class SettingsPanelEmbeddings : SettingsPanelProviderBase
         await this.UpdateEmbeddingProviders();
         await this.DataSourceEmbeddingService.QueueAllInternalDataSourcesAsync();
         await this.MessageBus.SendMessage<bool>(this, Event.CONFIGURATION_CHANGED);
-    }
-
-    private static string BuildDeleteIssue(DeleteSecretResponse deleteSecretResponse, TokenizerResponse deleteTokenizerResponse)
-    {
-        var issues = new List<string>();
-        if (!deleteSecretResponse.Success)
-            issues.Add(deleteSecretResponse.Issue);
-
-        if (!deleteTokenizerResponse.Success)
-            issues.Add(deleteTokenizerResponse.Message);
-
-        return string.Join(" | ", issues);
     }
 
     private async Task ExportEmbeddingProvider(EmbeddingProvider provider)
