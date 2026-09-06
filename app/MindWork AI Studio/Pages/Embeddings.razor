@@ -1,5 +1,6 @@
 @attribute [Route(Routes.EMBEDDINGS)]
 @inherits MSGComponentBase
+@using AIStudio.Provider
 
 <MudStack Spacing="3" Class="pr-2 pb-4" Style="height: 100%; min-height: 0; overflow-y: auto;">
     <MudPaper Class="pa-4 border-dashed border rounded-lg" Elevation="0">
@@ -73,6 +74,26 @@
                                             <MudText Typo="Typo.caption" Color="Color.Warning" Style="word-break: break-word;">
                                                 @failure.Reason
                                             </MudText>
+                                            <MudStack Row="@true" Wrap="Wrap.Wrap" Spacing="1" AlignItems="AlignItems.Center">
+                                                @if (failure.FailureReason is not ProviderRequestFailureReason.NONE)
+                                                {
+                                                    <MudChip T="string" Size="Size.Small" Color="Color.Warning" Variant="Variant.Outlined">@failure.FailureReason.GetName()</MudChip>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(failure.EmbeddingProviderName))
+                                                {
+                                                    <MudText Typo="Typo.caption">@string.Format(T("Embedding provider: {0}"), failure.EmbeddingProviderName)</MudText>
+                                                }
+                                                @if (failure.OccurredAtUtc > DateTimeOffset.MinValue)
+                                                {
+                                                    <MudText Typo="Typo.caption">@failure.OccurredAtUtc.ToLocalTime().ToString("g")</MudText>
+                                                }
+                                                @if (failure.FailureReason.IsFixedInProviderSettings())
+                                                {
+                                                    <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Settings" OnClick="@this.OpenEmbeddingProviderSettings">
+                                                        @T("Open the settings")
+                                                    </MudButton>
+                                                }
+                                            </MudStack>
                                         </MudStack>
                                     }
                                 </MudStack>
@@ -80,7 +101,12 @@
                         </MudExpansionPanels>
                     }
 
-                    @if (!string.IsNullOrWhiteSpace(status.LastError) && status.Failures.Count == 0)
+                    @*
+                        Shown next to the list, not instead of it: the list says which files failed,
+                        while this is the one sentence about the data source as a whole. Hiding it
+                        as soon as a single file failed is what made it invisible in practice.
+                    *@
+                    @if (!string.IsNullOrWhiteSpace(status.LastError))
                     {
                         <MudAlert Severity="Severity.Warning" Variant="Variant.Text">
                             @status.LastError

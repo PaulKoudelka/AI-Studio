@@ -17,6 +17,13 @@ public sealed class DataSourceLocalRetrievalService(
 {
     private static string TB(string fallbackEN) => I18N.I.T(fallbackEN, typeof(DataSourceLocalRetrievalService).Namespace, nameof(DataSourceLocalRetrievalService));
 
+    //
+    // Which gaps the user was already told about in this session. Retrieval runs for every single
+    // message, so without this one broken embedding provider would put a warning on every prompt.
+    //
+    private readonly HashSet<string> reportedRetrievalGaps = new(StringComparer.Ordinal);
+    private readonly Lock retrievalGapLock = new();
+
     private enum RetrievalChannel
     {
         VECTOR,
@@ -109,12 +116,14 @@ public sealed class DataSourceLocalRetrievalService(
                     dataSource.Name,
                     dataSource.Id,
                     vectorStore.Name);
+                await this.ReportRetrievalGapAsync(dataSource, "no-vector-store", string.Format(TB("The data source '{0}' was left out of the answer: its local index is not available."), dataSource.Name));
                 return [];
             }
 
             if (!DataSourceEmbeddingProviders.TryResolve(settingsManager, dataSource, out var embeddingProvider))
             {
                 logger.LogWarning("Skipping vector retrieval for data source '{DataSourceName}' ({DataSourceId}) because the selected embedding provider is not available.", dataSource.Name, dataSource.Id);
+                await this.ReportRetrievalGapAsync(dataSource, "no-embedding-provider", string.Format(TB("The data source '{0}' was left out of the answer: its embedding provider is not available. Please check it in the settings."), dataSource.Name));
                 return [];
             }
 
@@ -128,6 +137,7 @@ public sealed class DataSourceLocalRetrievalService(
             if (vector is null || vector.Count == 0)
             {
                 logger.LogWarning("Skipping vector retrieval for data source '{DataSourceName}' ({DataSourceId}) because query embedding returned no vector.", dataSource.Name, dataSource.Id);
+                await this.ReportRetrievalGapAsync(dataSource, "no-query-vector", string.Format(TB("The data source '{0}' was left out of the answer: its embedding provider '{1}' did not return a vector for your message."), dataSource.Name, embeddingProvider.Name));
                 return [];
             }
 
@@ -143,11 +153,48 @@ public sealed class DataSourceLocalRetrievalService(
         {
             throw;
         }
+        catch (ProviderRequestException exception)
+        {
+            //
+            // The embedding provider named the cause and what to do about it. That sentence is
+            // worth far more to the user than the fact that a search came back empty:
+            //
+            logger.LogWarning(
+                exception,
+                "Vector retrieval failed for data source '{DataSourceName}' ({DataSourceId}) because the embedding provider failed. FailureReason={FailureReason}, StatusCode={StatusCode}.",
+                dataSource.Name, dataSource.Id, exception.FailureReason, exception.StatusCode);
+            await this.ReportRetrievalGapAsync(dataSource, $"provider-{exception.FailureReason}", string.Format(TB("The data source '{0}' was left out of the answer. {1}"), dataSource.Name, exception.UserMessage));
+            return [];
+        }
         catch (Exception exception)
         {
             logger.LogWarning(exception, "Vector retrieval failed for data source '{DataSourceName}' ({DataSourceId}).", dataSource.Name, dataSource.Id);
+            await this.ReportRetrievalGapAsync(dataSource, "vector-search-failed", string.Format(TB("The data source '{0}' was left out of the answer because searching it failed."), dataSource.Name));
             return [];
         }
+    }
+
+    /// <summary>
+    /// Tells the user once that a data source cannot take part in answering.
+    /// </summary>
+    /// <remarks>
+    /// A failed search is not an error of the chat: the model still answers, only without what
+    /// this data source knows. Saying so once is what keeps somebody from trusting an answer
+    /// which was put together without half of its sources. Saying it with every prompt would be
+    /// worse than saying nothing, which is why every gap is reported once per session.
+    /// </remarks>
+    /// <param name="dataSource">The data source which could not be searched.</param>
+    /// <param name="gapKey">What kind of gap this is, so a different problem is reported again.</param>
+    /// <param name="userMessage">What to tell the user.</param>
+    private async Task ReportRetrievalGapAsync(IInternalDataSource dataSource, string gapKey, string userMessage)
+    {
+        lock (this.retrievalGapLock)
+        {
+            if (!this.reportedRetrievalGaps.Add($"{dataSource.Id}::{gapKey}"))
+                return;
+        }
+
+        await MessageBus.INSTANCE.SendWarning(new(Icons.Material.Filled.SearchOff, userMessage));
     }
 
     private async Task<bool> QueryFitsEmbeddingProviderAsync(
@@ -166,6 +213,7 @@ public sealed class DataSourceLocalRetrievalService(
                 query.Length,
                 RustService.MAX_TOKEN_COUNT_REQUEST_TEXT_LENGTH,
                 providerTokenLimit);
+            await this.ReportRetrievalGapAsync(dataSource, "query-too-long", string.Format(TB("The data source '{0}' was left out of the answer because your message is too long to search with."), dataSource.Name));
             return false;
         }
 
@@ -178,6 +226,7 @@ public sealed class DataSourceLocalRetrievalService(
                 dataSource.Id,
                 embeddingProvider.Name,
                 tokenCountResponse?.Message ?? "No response was returned by the tokenizer service.");
+            await this.ReportRetrievalGapAsync(dataSource, "no-token-count", string.Format(TB("The data source '{0}' was left out of the answer: the tokenizer of its embedding provider '{1}' is not available."), dataSource.Name, embeddingProvider.Name));
             return false;
         }
 
@@ -191,6 +240,7 @@ public sealed class DataSourceLocalRetrievalService(
                 queryTokenCount,
                 embeddingProvider.Name,
                 providerTokenLimit);
+            await this.ReportRetrievalGapAsync(dataSource, "query-over-token-limit", string.Format(TB("The data source '{0}' was left out of the answer because your message is longer than its embedding provider '{1}' accepts."), dataSource.Name, embeddingProvider.Name));
             return false;
         }
 

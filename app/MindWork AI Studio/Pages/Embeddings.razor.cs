@@ -77,6 +77,15 @@ public partial class Embeddings : MSGComponentBase
             (status.State is DataSourceEmbeddingState.FAILED || status.FailedFiles > 0);
     }
 
+    /// <summary>
+    /// Takes the user to the settings, where the embedding providers are configured.
+    /// </summary>
+    /// <remarks>
+    /// Offered only for the failures a setting fixes, such as a rejected API key. Reading what
+    /// went wrong and then having to find the right page is where people give up.
+    /// </remarks>
+    private void OpenEmbeddingProviderSettings() => this.NavigationManager.NavigateTo(Routes.SETTINGS);
+
     private async Task RefreshDataSource(DataSourceEmbeddingStatus status)
     {
         await this.DataSourceEmbeddingService.RetryDataSourceAsync(status.DataSourceId);
