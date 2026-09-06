@@ -368,7 +368,7 @@
         "type": "Project"
       }
     },
-    "net9.0/win-x64": {
+    "net9.0/osx-arm64": {
       "SQLite": {
         "type": "Transitive",
         "resolved": "3.53.4",
