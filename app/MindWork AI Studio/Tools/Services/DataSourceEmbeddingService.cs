@@ -9,13 +9,12 @@ using AIStudio.Tools.Databases;
 using AIStudio.Tools.Databases.IndexStore;
 using AIStudio.Tools.Databases.VectorStore;
 using AIStudio.Tools.PluginSystem;
+using AIStudio.Tools.Security;
 
 namespace AIStudio.Tools.Services;
 
-public sealed partial class DataSourceEmbeddingService(
-    SettingsManager settingsManager, RustService rustService, DatabaseClientProvider databaseClientProvider,
-    ILogger<DataSourceEmbeddingService> logger)
-    : BackgroundService
+public sealed partial class DataSourceEmbeddingService(SettingsManager settingsManager, RustService rustService, DatabaseClientProvider databaseClientProvider,
+    PromptInjectionGuardService guardService, ILogger<DataSourceEmbeddingService> logger) : BackgroundService
 {
     private const int VECTOR_STORE_OPTIMIZATION_CHUNK_THRESHOLD = 100_000;
 
@@ -567,6 +566,14 @@ public sealed partial class DataSourceEmbeddingService(
         var failedFiles = inputFiles.FailedFiles;
         var lastError = inputFiles.LastError;
         var failureDetails = inputFiles.Failures.ToList();
+
+        //
+        // Everything the runtime filters out of these files is reported once for the whole data
+        // source. A run over a few thousand documents which removes something in forty of them
+        // is one thing that happened to the user, not forty. The scope ends with this method, so
+        // the report arrives when the run is finished rather than in the middle of it.
+        //
+        await using var promptInjectionReportingScope = guardService.BeginAction();
 
         foreach (var file in indexedFiles)
         {

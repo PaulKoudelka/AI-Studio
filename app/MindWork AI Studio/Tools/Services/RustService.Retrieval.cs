@@ -302,6 +302,9 @@ public sealed partial class RustService
             yield break;
         }
 
+        var promptInjectionFindings = new List<PromptInjectionFinding>();
+        var promptInjectionRedactedCount = 0;
+
         string? finalContentChunk;
         try
         {
@@ -372,6 +375,21 @@ public sealed partial class RustService
                     throw new InvalidOperationException($"Rust could not extract '{path}': {error.Message}");
                 }
 
+                if (processedEvent.PromptInjection is { } promptInjection)
+                {
+                    //
+                    // Not a failure: the passages were removed and the document around them is
+                    // intact, so what remains still belongs into the index. It only has to reach
+                    // the user, because from here on the indexed document is no longer the one
+                    // sitting on their disk.
+                    //
+                    promptInjectionRedactedCount += promptInjection.RedactedCount;
+                    if (promptInjection.Findings is { } findings)
+                        promptInjectionFindings.AddRange(findings);
+
+                    continue;
+                }
+
                 if (!string.IsNullOrWhiteSpace(processedEvent.Content))
                     yield return (processedEvent.Content, sseEvent.TokenCount);
             }
@@ -383,6 +401,18 @@ public sealed partial class RustService
 
         if (!string.IsNullOrWhiteSpace(finalContentChunk))
             yield return (finalContentChunk, null);
+
+        if (promptInjectionRedactedCount is 0)
+            yield break;
+
+        //
+        // Reported from here for the same reason as in ReadArbitraryFileData above: these two
+        // methods together are every way of reading a file, so they are the only two places
+        // where no caller can forget the report. Here it was missing, which is why a whole
+        // indexing run could filter documents without ever saying so.
+        //
+        var guardService = Program.SERVICE_PROVIDER.GetRequiredService<PromptInjectionGuardService>();
+        await guardService.ReportAsync(new(PromptInjectionSource.FileContent(path), promptInjectionFindings, promptInjectionRedactedCount));
     }
 
     private bool TryLogSseErrorMessage(string jsonContent, string path)
