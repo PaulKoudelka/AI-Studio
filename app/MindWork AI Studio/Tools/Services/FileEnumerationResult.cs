@@ -12,7 +12,7 @@ public sealed class FileEnumerationResult
 
     public void AddFailure(string filePath, string reason)
     {
-        this.Failures.Add(new DataSourceEmbeddingFailure(filePath, reason));
+        this.Failures.Add(new DataSourceEmbeddingFailure(filePath, reason, DateTimeOffset.UtcNow));
         this.FailedFiles = this.Failures.Count;
         this.LastError = reason;
     }

@@ -456,13 +456,13 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
         if (!this.TryResolveEmbeddingProvider(dataSource, out var embeddingProvider))
         {
             token.ThrowIfCancellationRequested();
-            this.UpsertStatus(this.GetFallbackStatus(dataSource, "The selected embedding provider is not available."));
+            this.UpsertStatus(this.GetFallbackStatus(dataSource, TB("The selected embedding provider is not available. Please check it in the settings.")));
             return;
         }
 
         if (!embeddingProvider.GetConfidenceLevel(settingsManager).AllowsDataSourceConfidenceLevel(internalDataSource.ConfidenceLevel))
         {
-            var errorMessage = $"The selected embedding provider is not allowed to embed this data source. The data source requires provider confidence '{internalDataSource.ConfidenceLevel.GetName()}'. The embedding provider has confidence '{embeddingProvider.GetConfidenceLevel(settingsManager).GetName()}'.";
+            var errorMessage = string.Format(TB("The selected embedding provider is not allowed to index this data source. The data source asks for the confidence level '{0}', while the embedding provider has '{1}'."), internalDataSource.ConfidenceLevel.GetName(), embeddingProvider.GetConfidenceLevel(settingsManager).GetName());
             logger.LogWarning(
                 "Skipping background embeddings for data source '{DataSourceName}' ({DataSourceId}) because embedding provider '{EmbeddingProviderName}' ({EmbeddingProviderId}) does not meet the required confidence. RequiredConfidence={RequiredConfidence}, EmbeddingProviderConfidence={EmbeddingProviderConfidence}.",
                 dataSource.Name,
@@ -568,6 +568,13 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
         var failureDetails = inputFiles.Failures.ToList();
 
         //
+        // Which kinds of provider failure the user was already told about in this run. A rejected
+        // API key is the same problem for every one of a few thousand documents, and one message
+        // is what it takes to send the user to the settings.
+        //
+        var reportedFailureReasons = new HashSet<ProviderRequestFailureReason>();
+
+        //
         // Everything the runtime filters out of these files is reported once for the whole data
         // source. A run over a few thousand documents which removes something in forty of them
         // is one thing that happened to the user, not forty. The scope ends with this method, so
@@ -614,7 +621,7 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
                 token.ThrowIfCancellationRequested();
                 var fingerprintAfterEmbedding = BuildFileMetadataHash(file);
                 if (!string.Equals(fingerprint, fingerprintAfterEmbedding, StringComparison.Ordinal))
-                    throw new IOException($"The file '{file.FullName}' changed while it was being embedded. Its partial embeddings will be discarded and the file will be retried on the next refresh.");
+                    throw new IOException(string.Format(TB("The file '{0}' changed while it was being indexed. What was indexed of it is discarded, and the file is tried again during the next run."), file.FullName));
 
                 var embeddedAtUtc = DateTimeOffset.UtcNow;
                 var record = new EmbeddedFileRecord(
@@ -646,11 +653,44 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
             {
                 throw;
             }
+            catch (ProviderRequestException exception)
+            {
+                //
+                // The provider said what went wrong and what the user can do about it. That
+                // sentence is what goes into the status, together with the classification the UI
+                // needs to offer the matching way out.
+                //
+                failedFiles++;
+                lastError = exception.UserMessage;
+                failureDetails.Add(new DataSourceEmbeddingFailure(file.FullName, exception.UserMessage, DateTimeOffset.UtcNow, exception.FailureReason, exception.StatusCode, embeddingProvider.Name));
+                manifest.Files.Remove(file.FullName);
+                await this.CleanupFailedFileAsync(indexStore, vectorStore, dataSource, collectionName, file.FullName, optimizationTracker, token);
+
+                logger.LogWarning(
+                    exception,
+                    "Failed to embed file '{FilePath}' for data source '{DataSourceName}' because the embedding provider '{EmbeddingProviderName}' failed. FailureReason={FailureReason}, StatusCode={StatusCode}.",
+                    file.FullName,
+                    dataSource.Name,
+                    embeddingProvider.Name,
+                    exception.FailureReason,
+                    exception.StatusCode);
+                this.UpsertStatus(this.CreateStatus(dataSource, DataSourceEmbeddingState.RUNNING, totalFiles, skippedFiles + completedFiles, failedFiles, file.Name, exception.UserMessage, failureDetails));
+
+                // Once per kind of failure, not once per file:
+                if (reportedFailureReasons.Add(exception.FailureReason))
+                    await MessageBus.INSTANCE.SendError(new(Icons.Material.Filled.CloudOff, exception.UserMessage));
+            }
             catch (Exception exception)
             {
+                //
+                // Everything which is not the provider's doing: a file which changed while it was
+                // read, one which yielded no text, a vector store which refused to store. These
+                // are about this one file, so they go into the list and not into a message which
+                // would interrupt whatever the user is doing right now.
+                //
                 failedFiles++;
                 lastError = exception.Message;
-                failureDetails.Add(new DataSourceEmbeddingFailure(file.FullName, exception.Message));
+                failureDetails.Add(new DataSourceEmbeddingFailure(file.FullName, exception.Message, DateTimeOffset.UtcNow, EmbeddingProviderName: embeddingProvider.Name));
                 manifest.Files.Remove(file.FullName);
                 await this.CleanupFailedFileAsync(indexStore, vectorStore, dataSource, collectionName, file.FullName, optimizationTracker, token);
 
@@ -730,7 +770,7 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
             await this.FlushBatchAsync(indexStore, vectorStore, dataSource, file, fingerprint, parentFile, embeddingProvider, provider, manifest, optimizationTracker, collectionName, batch, token);
 
         if (totalChunkCount == 0)
-            throw new InvalidOperationException($"The file '{file.Name}' did not yield any text chunks.");
+            throw new InvalidOperationException(string.Format(TB("No text could be read from the file '{0}'."), file.Name));
 
         logger.LogDebug(
             "Generated {ChunkCount} chunks for file '{FilePath}' in data source '{DataSourceName}' ({DataSourceId}).",
@@ -775,26 +815,35 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
         {
             throw;
         }
+        catch (ProviderRequestException)
+        {
+            //
+            // The provider already named the cause and what to do about it. Wrapping that in a
+            // sentence about a batch of chunks would replace the one thing the user can act on
+            // with the fact that something failed:
+            //
+            throw;
+        }
         catch (Exception exception)
         {
-            throw new InvalidOperationException($"The embedding provider failed to embed {batch.Count} chunk(s) for file '{file.Name}'. Provider message: {exception.Message}", exception);
+            throw new InvalidOperationException(string.Format(TB("The embedding provider was not able to embed {0} part(s) of the file '{1}'. The provider reported: {2}"), batch.Count, file.Name, exception.Message), exception);
         }
 
         if (vectors.Count != batch.Count)
-            throw new InvalidOperationException($"The embedding provider returned {vectors.Count} vectors for {batch.Count} text chunks.");
+            throw new InvalidOperationException(string.Format(TB("The embedding provider answered with {0} vectors for {1} parts of the file '{2}'. Please select another embedding model or provider."), vectors.Count, batch.Count, file.Name));
 
         var vectorSize = vectors.FirstOrDefault()?.Count ?? 0;
         if (vectorSize <= 0)
-            throw new InvalidOperationException("The embedding provider returned an empty vector.");
+            throw new InvalidOperationException(TB("The embedding provider answered with an empty vector. Please select another embedding model or provider."));
 
         if (vectors.Any(vector => vector.Count != vectorSize))
-            throw new InvalidOperationException("The embedding provider returned vectors with inconsistent dimensions.");
+            throw new InvalidOperationException(TB("The embedding provider answered with vectors of different sizes. Please select another embedding model or provider."));
 
         if (vectors.Any(vector => vector.Any(value => !float.IsFinite(value))))
-            throw new InvalidOperationException("The embedding provider returned a vector containing a non-finite value.");
+            throw new InvalidOperationException(TB("The embedding provider answered with a vector containing an invalid number. Please select another embedding model or provider."));
 
         if (manifest.VectorSize > 0 && manifest.VectorSize != vectorSize)
-            throw new InvalidOperationException($"The embedding vector size changed from {manifest.VectorSize} to {vectorSize}. Please re-save the data source to trigger a clean re-index.");
+            throw new InvalidOperationException(string.Format(TB("The size of the embedding vectors changed from {0} to {1}. Please save the data source again to index it from scratch."), manifest.VectorSize, vectorSize));
 
         if (manifest.VectorSize == 0)
         {
@@ -810,7 +859,7 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
                 await vectorStore.DeleteVectorStore(collectionName, token);
                 ensureResult = await vectorStore.EnsureVectorStoreExists(collectionName, dataSource.Name, vectorSize, token);
                 if (!ensureResult.Created)
-                    throw new InvalidOperationException($"Vector store '{collectionName}' could not be recreated cleanly.");
+                    throw new InvalidOperationException(string.Format(TB("The local index '{0}' could not be created again. Please restart AI Studio and try once more."), collectionName));
             }
 
             await indexStore.UpdateVectorSizeAsync(dataSource.Id, vectorSize, token);
@@ -1262,7 +1311,7 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
             failedFiles,
             lastError: failedFiles > 0
                 ? string.IsNullOrWhiteSpace(lastError)
-                    ? "Some files could not be embedded. See the logs for details."
+                    ? TB("Some files could not be indexed. The list below says which ones and why.")
                     : lastError
                 : string.Empty,
             failures: failures);
@@ -1277,7 +1326,7 @@ public sealed partial class DataSourceEmbeddingService(SettingsManager settingsM
             0,
             1,
             lastError: errorMessage,
-            failures: [new DataSourceEmbeddingFailure(dataSource.Name, errorMessage)]);
+            failures: [new DataSourceEmbeddingFailure(dataSource.Name, errorMessage, DateTimeOffset.UtcNow)]);
     }
 
     private DataSourceQueueRequestResult TryReserveDataSourceQueueSlot(string dataSourceId, bool queueAfterCurrentRun)

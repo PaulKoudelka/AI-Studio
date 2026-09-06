@@ -450,7 +450,7 @@ public sealed partial class DataSourceEmbeddingService
 
                 var smallestCandidate = AddOverlapPrefix(text[startIndex..Math.Min(startIndex + 1, text.Length)].Trim(), overlapPrefix);
                 var smallestCandidateTokenCount = await this.GetEmbeddingTokenCountAsync(embeddingProvider, smallestCandidate, token);
-                throw new InvalidOperationException($"The max chunk length for embedding provider '{embeddingProvider.Name}' is too low. The smallest possible split still has {smallestCandidateTokenCount} tokens, but the configured limit is {options.MaxChunkTokenLength}.");
+                throw new InvalidOperationException(string.Format(TB("The chunk size configured for the embedding provider '{0}' is too small: the smallest piece the text can be cut into still has {1} tokens, while the limit is {2}."), embeddingProvider.Name, smallestCandidateTokenCount, options.MaxChunkTokenLength));
             }
 
             var chunk = AddOverlapPrefix(text[startIndex..bestEndIndex].Trim(), overlapPrefix);
@@ -525,7 +525,7 @@ public sealed partial class DataSourceEmbeddingService
             return response.Value.TokenCount;
 
         var message = response?.Message ?? "No response was returned by the tokenizer service.";
-        throw new InvalidOperationException($"Could not count tokens for embedding provider '{embeddingProvider.Name}'. {message}");
+        throw new InvalidOperationException(string.Format(TB("The tokens of the text could not be counted for the embedding provider '{0}'. {1}"), embeddingProvider.Name, message));
     }
 
     private ChunkingOptions GetChunkingOptions(IDataSource dataSource, EmbeddingProvider embeddingProvider)
@@ -742,7 +742,7 @@ public sealed partial class DataSourceEmbeddingService
                         break;
 
                     default:
-                        result.AddFailure(localFile.FilePath, $"The selected file '{localFile.FilePath}' is not supported for background embeddings.");
+                        result.AddFailure(localFile.FilePath, string.Format(TB("The file '{0}' has a type AI Studio cannot index."), localFile.FilePath));
                         break;
                 }
 
@@ -756,11 +756,11 @@ public sealed partial class DataSourceEmbeddingService
         switch (dataSource)
         {
             case DataSourceLocalFile localFile:
-                result.AddFailure(localFile.FilePath, $"The selected file '{localFile.FilePath}' does not exist.");
+                result.AddFailure(localFile.FilePath, string.Format(TB("The file '{0}' does not exist."), localFile.FilePath));
                 break;
 
             case DataSourceLocalDirectory localDirectory:
-                result.AddFailure(localDirectory.Path, $"The selected directory '{localDirectory.Path}' does not exist.");
+                result.AddFailure(localDirectory.Path, string.Format(TB("The folder '{0}' does not exist."), localDirectory.Path));
                 break;
         }
 
@@ -786,7 +786,7 @@ public sealed partial class DataSourceEmbeddingService
             catch (Exception exception)
             {
                 logger.LogWarning(exception, "Cannot access directory '{DirectoryPath}' while indexing.", currentPath);
-                result.AddFailure(currentPath, $"The directory '{currentPath}' could not be accessed.");
+                result.AddFailure(currentPath, string.Format(TB("The folder '{0}' could not be opened. Please check whether you are allowed to read it."), currentPath));
                 continue;
             }
 
@@ -802,7 +802,7 @@ public sealed partial class DataSourceEmbeddingService
                 catch (Exception exception)
                 {
                     logger.LogWarning(exception, "Cannot inspect file '{FilePath}' while indexing.", filePath);
-                    result.AddFailure(filePath, $"The file '{filePath}' could not be inspected.");
+                    result.AddFailure(filePath, string.Format(TB("The file '{0}' could not be read. Please check whether you are allowed to read it."), filePath));
                     continue;
                 }
 
