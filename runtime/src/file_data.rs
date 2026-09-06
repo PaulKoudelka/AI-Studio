@@ -415,10 +415,10 @@ fn take_released(held: &mut VecDeque<(u64, Chunk)>, released: Vec<(u64, String)>
             // treats a missing count as "not counted yet" and counts that segment itself, so the
             // document still arrives complete.
             //
-            if let Some(tokenizer) = tokenizer {
-                if let Err(e) = segment.set_token_count(tokenizer) {
-                    warn!("Failed to count the tokens of a released chunk: {e}");
-                }
+            if let Some(tokenizer) = tokenizer
+                && let Err(e) = segment.set_token_count(tokenizer)
+            {
+                warn!("Failed to count the tokens of a released chunk: {e}");
             }
 
             chunks.push(segment);

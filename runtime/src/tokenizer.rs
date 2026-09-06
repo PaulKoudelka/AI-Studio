@@ -178,7 +178,7 @@ fn validate_tokenizer_file(path: &PathBuf) -> Result<usize, String> {
 fn handle_tokenizer_store(payload: &TokenizerStorage) -> Result<String, std::io::Error> {
     let data_dir = DATA_DIRECTORY
         .get()
-        .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::Other, "DATA_DIRECTORY not initialized"))?;
+        .ok_or_else(|| std::io::Error::other("DATA_DIRECTORY not initialized"))?;
 
     let base_path = PathBuf::from(data_dir).join("tokenizers");
 
@@ -219,7 +219,7 @@ fn handle_tokenizer_delete(payload: &TokenizerDelete) -> Result<(), std::io::Err
 
     let data_dir = DATA_DIRECTORY
         .get()
-        .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::Other, "DATA_DIRECTORY not initialized"))?;
+        .ok_or_else(|| std::io::Error::other("DATA_DIRECTORY not initialized"))?;
 
     let tokenizer_path = PathBuf::from(data_dir)
         .join("tokenizers")
