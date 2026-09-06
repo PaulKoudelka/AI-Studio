@@ -1057,6 +1057,19 @@ public sealed partial class DataSourceEmbeddingService(
 
     private bool IsSupportedInternalDataSource(IDataSource dataSource)
     {
+        //
+        // Local RAG is a preview feature, so nothing here may run while it is switched off. This is
+        // the one place to decide that: every path which scans files, starts a watcher, creates the
+        // index database or sends text to an embedding provider asks this question first.
+        //
+        // Checking the feature instead of relying on "no data sources configured" also covers the
+        // case where somebody enabled the feature, configured local data sources, and switched the
+        // feature off again. Their data sources stay in the settings, and without this check the
+        // service would keep indexing them.
+        //
+        if (!PreviewFeatures.PRE_RAG_2024.IsEnabled(settingsManager))
+            return false;
+
         return dataSource is DataSourceLocalDirectory or DataSourceLocalFile;
     }
 

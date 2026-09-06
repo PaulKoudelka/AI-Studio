@@ -35,7 +35,13 @@ public sealed class AISrcSelWithRetCtxVal : IRagProcess
         //
         // 1. Check if the user wants to bind any data sources to the chat:
         //
-        if (chatThread.DataSourceOptions.IsEnabled())
+        //
+        // Data sources are a preview feature. The check belongs here rather than in the options
+        // themselves: a chat keeps its data source options while the feature is switched off, and
+        // organizations may preselect data sources through a configuration plugin. Without this,
+        // such a chat would still run the entire RAG process with the feature disabled.
+        //
+        if (PreviewFeatures.PRE_RAG_2024.IsEnabled(settings) && chatThread.DataSourceOptions.IsEnabled())
         {
             LOGGER.LogInformation("Data sources are enabled for this chat.");
             

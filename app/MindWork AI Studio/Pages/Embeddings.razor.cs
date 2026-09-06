@@ -1,4 +1,5 @@
 using AIStudio.Components;
+using AIStudio.Settings.DataModel;
 using AIStudio.Tools.Services;
 
 using Microsoft.AspNetCore.Components;
@@ -10,6 +11,9 @@ public partial class Embeddings : MSGComponentBase
     [Inject]
     private DataSourceEmbeddingService DataSourceEmbeddingService { get; init; } = null!;
 
+    [Inject]
+    private NavigationManager NavigationManager { get; init; } = null!;
+
     private IReadOnlyList<DataSourceEmbeddingStatus> Statuses { get; set; } = [];
 
     private int TotalIndexedFiles => this.Statuses.Sum(status => status.IndexedFiles);
@@ -20,6 +24,17 @@ public partial class Embeddings : MSGComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        //
+        // This page belongs to the local RAG preview feature. Unlike the other preview pages, it
+        // has a route of its own, so it can be reached by typing the address even while the feature
+        // is switched off. There is nothing to show in that case.
+        //
+        if (!PreviewFeatures.PRE_RAG_2024.IsEnabled(this.SettingsManager))
+        {
+            this.NavigationManager.NavigateTo(Routes.HOME);
+            return;
+        }
+
         this.ApplyFilters([], [ Event.RAG_EMBEDDING_STATUS_CHANGED, Event.CONFIGURATION_CHANGED ]);
         await base.OnInitializedAsync();
         this.ReloadStatuses();
