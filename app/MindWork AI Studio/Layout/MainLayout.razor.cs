@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using AIStudio.Dialogs;
 using AIStudio.Settings;
 using AIStudio.Settings.DataModel;
@@ -84,7 +83,7 @@ public partial class MainLayout : LayoutComponentBase, IMessageBusReceiver, ILan
     private DataSourceEmbeddingOverview embeddingOverview = new(false, DataSourceEmbeddingState.COMPLETED, 0, 0, 0);
     private IReadOnlyCollection<NavBarItem> navItems = [];
     private NavBarItem embeddingItem = new (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false);
-    private bool showEmbeddingStatusIcon = false;
+    private bool showEmbeddingStatusIcon;
     
     #region Overrides of ComponentBase
 

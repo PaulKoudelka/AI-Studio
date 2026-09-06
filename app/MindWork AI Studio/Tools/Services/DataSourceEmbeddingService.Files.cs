@@ -6,7 +6,6 @@ using AIStudio.Provider;
 using AIStudio.Settings;
 using AIStudio.Settings.DataModel;
 using AIStudio.Tools.Databases.IndexStore;
-using AIStudio.Tools.PluginSystem;
 using AIStudio.Tools.Rust;
 
 namespace AIStudio.Tools.Services;
@@ -242,7 +241,7 @@ public sealed partial class DataSourceEmbeddingService
             minimumCandidateUnitCount = searchedMaximumCandidateUnitCount + 1;
             maximumCandidateUnitCount = (int)Math.Min(
                 availableUnitCount,
-                Math.Max((long)minimumCandidateUnitCount, (long)searchedMaximumCandidateUnitCount * 2));
+                Math.Max(minimumCandidateUnitCount, (long)searchedMaximumCandidateUnitCount * 2));
         }
 
         return largestValidUnitCount;
@@ -282,7 +281,7 @@ public sealed partial class DataSourceEmbeddingService
         foreach (var unit in units)
         {
             consumedLength += unit.Length;
-            var tokenCountAtBoundary = (int)Math.Min(sourceTokenCount.Value, (long)sourceTokenCount.Value * consumedLength / totalLength);
+            var tokenCountAtBoundary = (int)Math.Min(sourceTokenCount.Value, sourceTokenCount.Value * consumedLength / totalLength);
             result.Add(Math.Max(0, tokenCountAtBoundary - allocatedTokenCount));
             allocatedTokenCount = tokenCountAtBoundary;
         }
@@ -455,7 +454,6 @@ public sealed partial class DataSourceEmbeddingService
             }
 
             var chunk = AddOverlapPrefix(text[startIndex..bestEndIndex].Trim(), overlapPrefix);
-            overlapPrefix = string.Empty;
             if (!string.IsNullOrWhiteSpace(chunk))
                 yield return chunk;
 
@@ -960,7 +958,7 @@ public sealed partial class DataSourceEmbeddingService
         {
             DataSourceLocalFile localFile => indexedFiles.Count > 0
                 ? fileHashes[indexedFiles[0].FullName]
-                : BuildMetadataHash("file", localFile.FilePath, Path.GetFileName(localFile.FilePath) ?? string.Empty, "missing", "0"),
+                : BuildMetadataHash("file", localFile.FilePath, Path.GetFileName(localFile.FilePath), "missing", "0"),
 
             DataSourceLocalDirectory localDirectory => this.BuildDirectoryMetadataHash(localDirectory, indexedFiles, fileHashes),
 

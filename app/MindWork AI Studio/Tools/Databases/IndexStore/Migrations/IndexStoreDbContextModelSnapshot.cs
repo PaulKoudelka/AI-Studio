@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AIStudio.Tools.Databases.IndexStore.Migrations;
 
+// EF Core writes this file and declares the type as partial. Dropping the keyword would only
+// last until the next migration is added, so the inspection is silenced instead.
+// ReSharper disable once PartialTypeWithSinglePart
 [DbContext(typeof(IndexStoreDbContext))]
 partial class IndexStoreDbContextModelSnapshot : ModelSnapshot
 {

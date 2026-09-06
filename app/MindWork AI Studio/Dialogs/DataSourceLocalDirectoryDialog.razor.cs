@@ -137,7 +137,7 @@ public partial class DataSourceLocalDirectoryDialog : MSGComponentBase
         ? T("No embedding selected")
         : string.IsNullOrWhiteSpace(this.SelectedEmbedding.TokenizerPath)
             ? T("Default tokenizer")
-            : System.IO.Path.GetFileName(this.SelectedEmbedding.TokenizerPath);
+            : Path.GetFileName(this.SelectedEmbedding.TokenizerPath);
 
     private int ProviderMaxChunkTokenLength => this.SelectedEmbedding?.EffectiveTokenLimit ?? EmbeddingProvider.DEFAULT_TOKEN_LIMIT;
 

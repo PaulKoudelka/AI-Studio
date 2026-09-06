@@ -1,7 +1,5 @@
 using AIStudio.Assistants.ERI;
 using AIStudio.Components;
-using AIStudio.Provider;
-using AIStudio.Settings;
 using AIStudio.Settings.DataModel;
 using AIStudio.Tools.ERIClient;
 using AIStudio.Tools.ERIClient.DataModel;

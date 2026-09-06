@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Threading;
 using AIStudio.Settings;
 using AIStudio.Settings.DataModel;
 

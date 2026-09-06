@@ -72,7 +72,7 @@ public sealed partial class RustService
     private async Task<TokenizerResponse?> GetTokenCount(string providerName, string tokenizerPath, string text, CancellationToken cancellationToken)
     {
         var result = await this.http.PostAsJsonAsync("/tokenizer/count", new {
-            text = text,
+            text,
             tokenizer_path = tokenizerPath,
         }, this.jsonRustSerializerOptions, cancellationToken);
 

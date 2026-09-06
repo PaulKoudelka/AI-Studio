@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Runtime.CompilerServices;
 
 using AIStudio.Settings;
-using AIStudio.Tools.Rust;
 using AIStudio.Tools.Security;
 
 namespace AIStudio.Tools.Services;
@@ -303,7 +302,7 @@ public sealed partial class RustService
             yield break;
         }
 
-        string? finalContentChunk = null;
+        string? finalContentChunk;
         try
         {
             await using var stream = await response.Content.ReadAsStreamAsync(token);

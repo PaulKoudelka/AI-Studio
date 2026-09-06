@@ -43,10 +43,10 @@ public sealed class DataSourceLocalRetrievalService(
         int ConfidenceLevelRank);
 
     public Task<IReadOnlyList<IRetrievalContext>> RetrieveDataAsync(DataSourceLocalFile dataSource, IContent lastUserPrompt, ChatThread thread, CancellationToken token = default) =>
-        this.RetrieveDataAsync((IInternalDataSource)dataSource, lastUserPrompt, token);
+        this.RetrieveDataAsync(dataSource, lastUserPrompt, token);
 
     public Task<IReadOnlyList<IRetrievalContext>> RetrieveDataAsync(DataSourceLocalDirectory dataSource, IContent lastUserPrompt, ChatThread thread, CancellationToken token = default) =>
-        this.RetrieveDataAsync((IInternalDataSource)dataSource, lastUserPrompt, token);
+        this.RetrieveDataAsync(dataSource, lastUserPrompt, token);
 
     private async Task<IReadOnlyList<IRetrievalContext>> RetrieveDataAsync(IInternalDataSource dataSource, IContent lastUserPrompt, CancellationToken token)
     {

@@ -4,7 +4,7 @@ using AIStudio.Tools.Services;
 
 namespace AIStudio.Tools.Databases;
 
-public sealed partial class DatabaseClientProvider(RustService rustService, ILoggerFactory loggerFactory) : IDisposable
+public sealed class DatabaseClientProvider(RustService rustService, ILoggerFactory loggerFactory) : IDisposable
 {
     private readonly Dictionary<DatabaseRole, DatabaseClient> clients = new();
     private readonly Dictionary<DatabaseRole, SemaphoreSlim> locks = new();
