@@ -93,7 +93,6 @@ public partial class ChatComponent : MSGComponentBase
     private Guid loadedParameterWorkspaceId = Guid.Empty;
     private Guid foregroundChatId = Guid.Empty;
     private int workspaceHeaderSyncVersion;
-    private HashSet<FileAttachment> chatDocumentPaths = [];
     private string tokenCount = "0";
     private bool HasCustomTokenizer => !string.IsNullOrWhiteSpace(this.Provider.TokenizerPath);
     private string TokenCountMessage => this.HasCustomTokenizer
@@ -394,7 +393,7 @@ public partial class ChatComponent : MSGComponentBase
 
         await this.ApplyLoadedChatParameterAsync();
         await this.SyncForegroundChatAsync();
-        if (providerChanged && this.HasCustomTokenizer && this.inputField is not null)
+        if (providerChanged && this.HasCustomTokenizer)
             await this.CalculateTokenCount();
 
         await this.ConsumeMediaOutcomeAsync();
@@ -1323,13 +1322,19 @@ public partial class ChatComponent : MSGComponentBase
             return;
         }
 
-        if (this.inputField.Value is null)
+        //
+        // Read the text from the bound property rather than from the input field: the field is a
+        // component reference, which is only set once the component has rendered. Counting is also
+        // triggered while parameters are set, which happens before that.
+        //
+        var currentInput = this.UserInput;
+        if (string.IsNullOrEmpty(currentInput))
         {
             this.tokenCount = "0";
             return;
         }
 
-        var response = await this.RustService.GetTokenCount(this.Provider, this.inputField.Value);
+        var response = await this.RustService.GetTokenCount(this.Provider, currentInput);
         if (response is null)
             return;
         if (!response.Value.Success)
