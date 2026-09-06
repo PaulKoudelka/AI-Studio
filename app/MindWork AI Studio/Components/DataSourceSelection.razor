@@ -7,11 +7,11 @@
         <MudTooltip Text="@T("Select the data you want to use here.")" Placement="Placement.Top">
             @if (this.PopoverTriggerMode is PopoverTriggerMode.ICON)
             {
-                <MudIconButton Icon="@Icons.Material.Filled.Source" Class="@this.PopoverButtonClasses" OnClick="@(() => this.ToggleDataSourceSelection())"/>
+                <MudIconButton Icon="@AppIcons.DATABASE" Class="@this.PopoverButtonClasses" OnClick="@(() => this.ToggleDataSourceSelection())"/>
             }
             else
             {
-                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Source" Class="@this.PopoverButtonClasses" OnClick="@(() => this.ToggleDataSourceSelection())">
+                <MudButton Variant="Variant.Filled" StartIcon="@AppIcons.DATABASE" Class="@this.PopoverButtonClasses" OnClick="@(() => this.ToggleDataSourceSelection())">
                     @T("Select data")
                 </MudButton>
             }
