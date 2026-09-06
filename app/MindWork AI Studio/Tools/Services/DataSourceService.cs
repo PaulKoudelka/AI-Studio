@@ -9,6 +9,13 @@ namespace AIStudio.Tools.Services;
 
 public sealed class DataSourceService
 {
+    //
+    // Trust is recorded for every participating provider, while only the chat provider's trust
+    // decides about external data sources below. The agent which validates retrieval contexts
+    // checks its own provider before it runs, so nothing slips through today. Keeping the value
+    // named here is what makes that asymmetry visible.
+    //
+    // ReSharper disable once NotAccessedPositionalProperty.Local
     private readonly record struct ParticipatingProvider(string Role, bool IsTrusted, ConfidenceLevel ConfidenceLevel);
 
     private readonly RustService rustService;

@@ -679,7 +679,7 @@ public sealed partial class DataSourceEmbeddingService
         if (matches.Count == 0)
             return [text];
 
-        return matches.Cast<Match>().Select(match => match.Value).ToList();
+        return matches.Select(match => match.Value).ToList();
     }
 
     private static List<(int Start, int End, string Text)> ReadLines(string text)

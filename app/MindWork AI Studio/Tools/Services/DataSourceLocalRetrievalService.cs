@@ -23,6 +23,13 @@ public sealed class DataSourceLocalRetrievalService(
         BM25,
     }
 
+    //
+    // A hit keeps the complete shape both retrieval channels deliver, even where nothing reads a
+    // value yet. Merging is deterministic on purpose for now, so Channel, Score and Rank have no
+    // consumer until reranking arrives. Naming them still beats handing an unlabelled tuple of
+    // strings and numbers through the service.
+    //
+    // ReSharper disable NotAccessedPositionalProperty.Local
     private sealed record LocalRetrievalHit(
         RetrievalChannel Channel,
         string ChunkId,
@@ -41,6 +48,7 @@ public sealed class DataSourceLocalRetrievalService(
         int Rank,
         string ConfidenceLevel,
         int ConfidenceLevelRank);
+    // ReSharper restore NotAccessedPositionalProperty.Local
 
     public Task<IReadOnlyList<IRetrievalContext>> RetrieveDataAsync(DataSourceLocalFile dataSource, IContent lastUserPrompt, ChatThread thread, CancellationToken token = default) =>
         this.RetrieveDataAsync(dataSource, lastUserPrompt, token);
