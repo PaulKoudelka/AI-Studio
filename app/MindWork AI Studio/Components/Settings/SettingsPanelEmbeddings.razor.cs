@@ -215,7 +215,21 @@ public partial class SettingsPanelEmbeddings : SettingsPanelProviderBase
             return;
 
         var embeddingProvider = provider.CreateProvider();
-        var embeddings = await embeddingProvider.EmbedTextAsync(provider.Model, this.SettingsManager, CancellationToken.None, inputText);
+        IReadOnlyList<IReadOnlyList<float>> embeddings;
+        try
+        {
+            embeddings = await embeddingProvider.EmbedTextAsync(provider.Model, this.SettingsManager, CancellationToken.None, inputText);
+        }
+        catch (ProviderRequestException exception)
+        {
+            //
+            // The provider named what went wrong and what to do about it. Showing that beats the
+            // sentence below, which used to be the same one for a missing API key, an unreachable
+            // provider and a provider which cannot embed anything at all:
+            //
+            await this.DialogService.ShowMessageBox(T("Embedding Result"), exception.UserMessage, T("Close"));
+            return;
+        }
 
         if (embeddings.Count == 0)
         {
